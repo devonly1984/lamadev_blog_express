@@ -1,10 +1,21 @@
 import { useState } from "react";
 import PostList from "../components/posts/PostList";
-import SideMenu from "../components/SideMenu";
+import SideMenu from "../components/shared/SideMenu";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPosts } from "../lib/post.helpers";
 
 const PostListPage = () => {
   const [open, setOpen] = useState(false)
-  return (
+  const { isPending, error, data } = useQuery({
+    queryKey: ["posts"],
+    queryFn: () => fetchPosts(),
+  });
+  if (isPending) return <>Loading...</>;
+  if (error) {
+    return "An Error has occurred"+error.message
+  }
+  console.log(data);
+  return ( 
     <div>
       <h1 className="mb-8 text-2xl">Development Blog</h1>
       <button

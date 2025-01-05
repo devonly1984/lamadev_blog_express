@@ -1,7 +1,7 @@
-import { catclass, PostCategories, postclass } from "../../constants/constants";
+import { PostCategories } from "../../constants/constants";
 import Search from "./Search";
 import { Link } from "react-router-dom";
-
+import { postclass, catclass } from "../../constants/styles";
 const MainCategories = () => {
   return (
     <div className="hidden md:flex bg-white rounded-3xl xl:rounded-full p-4 shadow-lg items-center justify-center gap-8">

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { PostCategories } from "../constants/constants";
-import Search from "./shared/Search";
-import Filters from "./shared/Filters";
+import { PostCategories } from "../../constants/constants";
+import Search from "./Search";
+import Filters from "./Filters";
 const SideMenu = () => {
   return (
     <div className="sticky px-4 h-max  top-8">

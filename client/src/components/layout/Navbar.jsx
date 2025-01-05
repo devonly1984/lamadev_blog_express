@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { XIcon, MenuIcon } from "lucide-react";
 import MenuLinks from "../shared/MenuLinks";
 import Image from "../shared/Image";
 import { Link } from "react-router-dom";
+import { useAuth } from "@clerk/clerk-react";
 const Navbar = () => {
-    const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const { getToken } = useAuth();
+
   return (
     <section className="w-full h-16 md:h-20 flex items-center justify-between">
       {/**Logo */}
