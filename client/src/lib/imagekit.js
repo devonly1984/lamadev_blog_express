@@ -1,8 +1,8 @@
 import {apiUrl} from '../constants/environment'
+
 export const authenticator = async () => {
   try {
-    console.log(apiUrl);
-    const response = await fetch(`${apiUrl}/upload-auth`);
+    const response = await fetch(`${apiUrl}/posts/upload-auth`);
 
     if (!response.ok) {
       const errorText = await response.text();

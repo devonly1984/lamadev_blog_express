@@ -8,17 +8,16 @@ import { useRef } from 'react';
 
 const UploadButton = ({ children, type, setProgress, setData }) => {
   const ref = useRef(null);
-  const handleSuccess = (res) => {
-    console.log(res);
+  const onSuccess = (res) => {
     setData(res);
     toast.success("File uploaded Successfully");
   };
-  const handleError = (err) => {
+  const onError = (err) => {
     console.log(err);
     toast.error("Image upload failed!");
   };
   const handleUploadProgress = (progress) => {
-    console.log(progress);
+
     setProgress(Math.round(progress.loaded / progress.total) * 100);
   };
 
@@ -30,8 +29,8 @@ const UploadButton = ({ children, type, setProgress, setData }) => {
     >
       <IKUpload
         useUniqueFileName
-        onSuccess={handleSuccess}
-        onError={handleError}
+        onSuccess={onSuccess}
+        onError={onError}
         onUploadProgress={handleUploadProgress}
         className="hidden"
         ref={ref}

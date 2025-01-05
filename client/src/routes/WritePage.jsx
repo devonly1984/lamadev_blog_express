@@ -17,7 +17,8 @@ const WritePage = () => {
 
 
   useEffect(() => {
-    img && setContent((prev) => prev + `<p><image src="${img.url}"/></p>`);
+    img && setContent((prev) => prev + `<p><img src="${img.url}"/></p>`);
+    
   }, [img]);
   useEffect(() => {
     video &&
@@ -68,7 +69,10 @@ const WritePage = () => {
       <h1 className="text-xl font-light">Create a new Post</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6 flex-1 mb-6">
         <UploadButton type="image" setProgress={setProgress} setData={setCover}>
-          <button className="p-2 shadow-md rounded-xl text-sm text-gray-500 bg-white w-max ">
+          <button
+            type="button"
+            className="p-2 shadow-md rounded-xl text-sm text-gray-500 bg-white w-max "
+          >
             Add a cover image
           </button>
         </UploadButton>
@@ -124,17 +128,18 @@ const WritePage = () => {
             onChange={setContent}
             className="flex-1 rounded-xl bg-white shadow-md "
             name="content"
+            readOnly={0 < progress && progress < 100}
           />
         </div>
         <button
           className="bg-blue-800 text-white font-medium rounded-xl mt-4 p-2 w-36 disabled:bg-blue-400 disabled:cursor-not-allowed"
           disabled={
-            createPostMutation.isPending || (0 > progress && progress < 100)
+            createPostMutation.isPending || (0 < progress && progress < 100)
           }
         >
           {createPostMutation.isPending ? "Loading..." : "Send"}
         </button>
-        {"Progress" + progress}
+        {"Progress " + progress}
         {createPostMutation.isError && (
           <span>{createPostMutation.error.message}</span>
         )}
