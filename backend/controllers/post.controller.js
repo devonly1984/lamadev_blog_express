@@ -1,29 +1,29 @@
-import ImageKit from 'imagekit';
-import Post from '../models/post.model.js'
+import ImageKit from "imagekit";
+import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
 const imageKit = new ImageKit({
   urlEndpoint: process.env.IK_URL_ENDPOINT,
   publicKey: process.env.IK_PUBLIC_KEY,
-  privateKey: process.env.IK_PRIVATE_KEY
-})
-export const getAllPosts = async(req,res)=>{
-  const page = parseInt(req.query.page)||1
-    const limit = parseInt(req.query.limit)||2  
+  privateKey: process.env.IK_PRIVATE_KEY,
+});
+export const getAllPosts = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 2;
   const posts = await Post.find()
     .limit(limit)
     .skip((page - 1) * limit);
-    const totalPosts = await Post.countDocuments();
-    const hasMore = page * limit < totalPosts;
-    res.status(200).json({ posts, hasMore });
-}
+  const totalPosts = await Post.countDocuments();
+  const hasMore = page * limit < totalPosts;
+  res.status(200).json({ posts, hasMore });
+};
 
-export const getPostBySlug = async(req,res)=>{
-    const post = await Post.findOne({slug: req.params.slug})
-    res.status(200).json(post);
-}
+export const getPostBySlug = async (req, res) => {
+  const post = await Post.findOne({ slug: req.params.slug });
+  res.status(200).json(post);
+};
 
-export const createPost = async(req,res)=>{
+export const createPost = async (req, res) => {
   const clerkUserId = req.auth.userId;
 
   if (!clerkUserId) {
@@ -46,24 +46,24 @@ export const createPost = async(req,res)=>{
 
   const post = await newPost.save();
   res.status(200).json(post);
-}
-export const deletePost = async(req,res)=>{
-    const clerkUserId = req.auth.userId;
-    if (!clerkUserId) {
-        return res.status(401).json("Not Authenticated");
-    }
-    const user = await User.findOne({clerkUserId})
-    const deletedPost = await Post.findByIdAndDelete({
-      _id: req.params.id,
-      user: user._id,
-    });
-    if (!deletedPost) {
-        return res.status(403).json("You can delete only your posts");
-    }
-    res.status(200).json("Post has been deleted");
-}
-export const uploadAuth = async(req,res)=>{
+};
+export const deletePost = async (req, res) => {
+  const clerkUserId = req.auth.userId;
+  if (!clerkUserId) {
+    return res.status(401).json("Not Authenticated");
+  }
+  const user = await User.findOne({ clerkUserId });
+  const deletedPost = await Post.findByIdAndDelete({
+    _id: req.params.id,
+    user: user._id,
+  });
+  if (!deletedPost) {
+    return res.status(403).json("You can delete only your posts");
+  }
+  res.status(200).json("Post has been deleted");
+};
+export const uploadAuth = async (req, res) => {
   const result = imageKit.getAuthenticationParameters();
 
   res.send(result);
-}
+};

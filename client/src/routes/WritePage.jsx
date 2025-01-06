@@ -55,7 +55,7 @@ const WritePage = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const newPost = {
-      img: cover.filePath || "",
+      img: cover.filePath || "default-image.jpeg",
       title: formData.get("title"),
       category: formData.get("category"),
       description: formData.get("description"),
