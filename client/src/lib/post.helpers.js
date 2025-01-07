@@ -11,3 +11,7 @@ export const fetchPosts = async(pageParam)=>{
     });
     return res.data;
 }
+export const fetchPostBySlug = async(slug)=>{
+  const res = await axios.get(`${apiUrl}/posts/${slug}`)
+  return res.data;
+}

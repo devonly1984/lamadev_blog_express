@@ -1,24 +1,60 @@
 import Image from "../shared/Image";
-
-const Comment = () => {
+import { format } from "timeago.js";
+import { useAuth, useUser } from "@clerk/clerk-react";
+import { toast } from "react-toastify";
+import { apiUrl } from "../../constants/environment";
+import axios from "axios";
+import { QueryClient, useMutation } from "@tanstack/react-query";
+const Comment = ({comment,postId}) => {
+  const {user} = useUser();
+  const {getToken} = useAuth()
+  const role = user.publicMetadata.role 
+  const queryClient = new QueryClient();
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const token = await getToken();
+      return axios.delete(`${apiUrl}/comments/${comment._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+          toast.success("Comment deleted successfully!");
+        
+        },
+        onError: (err) => {
+          toast.error(err.response.data);
+        },
+      });
+    },
+  });
   return (
     <div className="p-4 bg-slate-50 rounded-xl mb-8">
       <div className="flex items-center gap-4">
-        <Image
-          src="userImg.jpeg"
-          className="size-10 rounded-full object-cover"
-          w="40"
-        />
-        <span className="font-medium">John Doe</span>
-        <span className="text-sm text-gray-500">X days ago</span>
+        {comment.user.img && (
+          <Image
+            src={comment.user.img}
+            className="size-10 rounded-full object-cover"
+            w="40"
+          />
+        )}
+        <span className="font-medium">{comment.user.username}</span>
+        <span className="text-sm text-gray-500">
+          {format(comment.createdAt)}
+        </span>
+        {user &&
+          (comment.user.username === user.username || role === "admin") && (
+            <span
+              className="text-xs text-red-300 hover:text-red-500 cursor-pointer"
+              onClick={() => deleteMutation.mutate()}
+            >
+              Delete
+              {deleteMutation.isPending && <span>(in progress)</span>}
+            </span>
+          )}
       </div>
       <div className="mt-4">
-        <p>
-          Aliqua quis labore tempor duis aliquip non eiusmod aute enim. Veniam
-          ex commodo quis incididunt ex. Velit ut ea anim incididunt. Amet
-          labore ipsum tempor esse laborum eu. Irure nisi laboris id quis
-          incididunt proident.
-        </p>
+        <p>{comment.description}</p>
       </div>
     </div>
   );

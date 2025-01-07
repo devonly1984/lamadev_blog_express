@@ -11,6 +11,7 @@ export const getAllPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 2;
   const posts = await Post.find()
+    .populate("user", "username")
     .limit(limit)
     .skip((page - 1) * limit);
   const totalPosts = await Post.countDocuments();
@@ -19,7 +20,10 @@ export const getAllPosts = async (req, res) => {
 };
 
 export const getPostBySlug = async (req, res) => {
-  const post = await Post.findOne({ slug: req.params.slug });
+  const post = await Post.findOne({ slug: req.params.slug }).populate(
+    "user",
+    "username img"
+  );
   res.status(200).json(post);
 };
 
@@ -52,6 +56,11 @@ export const deletePost = async (req, res) => {
   if (!clerkUserId) {
     return res.status(401).json("Not Authenticated");
   }
+  const role = req.auth.sessionClaims?.metadata?.role || "user";
+  if (role === "admin") {
+    await Post.findByIdAndDelete(req.params.id);
+    return res.status(200).json("Post has been deleted");
+  }
   const user = await User.findOne({ clerkUserId });
   const deletedPost = await Post.findByIdAndDelete({
     _id: req.params.id,
@@ -60,6 +69,7 @@ export const deletePost = async (req, res) => {
   if (!deletedPost) {
     return res.status(403).json("You can delete only your posts");
   }
+
   res.status(200).json("Post has been deleted");
 };
 export const uploadAuth = async (req, res) => {

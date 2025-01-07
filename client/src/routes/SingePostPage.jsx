@@ -1,35 +1,50 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Image from "../components/shared/Image"
 import PostMenuAction from "../components/posts/PostMenuAction";
 import Search from "../components/shared/Search";
 import Comments from "../components/comments/Comments";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPostBySlug } from "../lib/post.helpers";
+import { format } from "timeago.js";
 
 const SingePostPage = () => {
+  const { slug } = useParams();
+  const { isPending, error, data:post } = useQuery({
+    queryKey: ["post", "slug"],
+    queryFn: () => fetchPostBySlug(slug),
+  });
+  if (isPending) {
+    return <>Loading...</>;
+  }
+  if (error) {
+    return <>Something went wrong {error.message}</>
+  }
+  if (!post) {
+    return <>Post not found</>;
+  }
   return (
     <div className="flex flex-col gap-8">
       {/**detail */}
       <div className="flex gap-8 ">
         <div className="lg:w-3/5 flex flex-col gap-8">
           <h1 className="text-xl md:text-3xl xl:text-4xl 2xl:text-5xl font-semibold">
-            Et aute duis incididunt amet adipisicing ad incididunt do deserunt
-            qui cupidatat.
+            {post.title}
           </h1>
           <div className=" flex items-center gap-2 text-gray-400 text-sm">
             <span>Written by</span>
-            <Link className="text-blue-800">John Doe</Link>
+            <Link className="text-blue-800">{post.user.username}</Link>
             <span>on</span>
-            <Link className="text-blue-800">Category</Link>
-            <span>X days ago</span>
+            <Link className="text-blue-800">{post.category}</Link>
+            <span>{format(post.createdAt)}</span>
           </div>
-          <p className="text-gray-500 font-medium">
-            Est duis culpa et ex minim officia do laboris dolore quis.
-            Adipisicing occaecat incididunt nisi non in incididunt reprehenderit
-            qui quis est occaecat sunt. Est id enim et officia laboris qui ad
-            aliqua aute aliquip voluptate enim deserunt.
-          </p>
+          <p className="text-gray-500 font-medium">{post.description}</p>
         </div>
         <div className="hidden lg:block w-2/5">
-          <Image src="postImg.jpeg" w="600" className="rounded-2xl" />
+          <Image
+            src={post.img || "default-image.png"}
+            w="600"
+            className="rounded-2xl"
+          />
         </div>
       </div>
       {/**Content */}
@@ -67,13 +82,15 @@ const SingePostPage = () => {
           <h1 className=" mb-4 text-sm font-medium">Author</h1>
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-12">
-              <Image
-                src="userImg.jpeg"
-                className="rounded-full size-12 object-cover"
-                w="48"
-                h="48"
-              />
-              <Link className="text-blue-800">John Doe</Link>
+              {post.user.img && (
+                <Image
+                  src={post.user.img || "userImg.jpeg"}
+                  className="rounded-full size-12 object-cover"
+                  w="48"
+                  h="48"
+                />
+              )}
+              <Link className="text-blue-800">{post.user.username}</Link>
             </div>
             <p className="text-sm text-gray-500">
               Dolore qui eu minim officia esse quis reprehenderit laborum.
@@ -88,7 +105,7 @@ const SingePostPage = () => {
             </div>
           </div>
 
-          <PostMenuAction />
+          <PostMenuAction post={post} />
           <h1 className="mt-8 mb-4 text-sm font-medium">Categories</h1>
           <div className="flex flex-col gap-2 text-sm">
             <Link className="underline">All</Link>
@@ -101,7 +118,7 @@ const SingePostPage = () => {
           <Search />
         </div>
       </div>
-      <Comments />
+      <Comments postId={post._id} />
     </div>
   );
 }

@@ -9,8 +9,6 @@ const PostList = () => {
     fetchNextPage,
     hasNextPage,
     isFetching: isPending,
-    isFetchingNextPage,
-    status,
   } = useInfiniteQuery({
     queryKey: ["posts"],
     queryFn: ({ pageParam = 1 }) => fetchPosts(pageParam),
