@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import SideMenu from "../components/shared/SideMenu";
 
-import PostListItem from "../components/posts/PostListItem";
+import PostList from "../components/posts/PostList";
 
 const PostListPage = () => {
   const [open, setOpen] = useState(false)
@@ -19,7 +19,7 @@ const PostListPage = () => {
       <div className="flex gap-8 flex-col-reverse md:flex-row">
         {/**Post List */}
         <div className="">
-         <PostListItem/>
+         <PostList/>
         </div>
         <div className={`${open ? "block" : "hidden"} md:block`}>
           <SideMenu />
